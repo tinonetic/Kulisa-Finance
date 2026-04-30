@@ -1,0 +1,11 @@
+Date,Amount,Description,Type,Category
+2026-05-01,2500.00,Monthly Salary,inflow,income
+2026-05-02,450.00,Grocery Store,outflow,food
+2026-05-03,120.00,Airtime Top-up,outflow,top-up
+2026-05-04,800.00,Rent Payment,outflow,utilities
+2026-05-05,150.00,Freelance Project,inflow,income
+2026-05-06,200.00,Petrol,outflow,transport
+2026-05-07,350.00,Stockvel Contribution,outflow,savings
+2026-05-08,500.00,Family Remittance,inflow,income
+2026-05-09,100.00,Street Food,outflow,food
+2026-05-10,3000.00,Major Client Project,inflow,income
