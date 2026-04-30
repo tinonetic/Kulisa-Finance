@@ -1,50 +1,38 @@
 # 🇿🇦 Khulisa: Financial Growth for All
 
-![Version](https://img.shields.io/badge/version-1.0.0-indigo)
-![License](https://img.shields.io/badge/license-Apache--2.0-emerald)
+> *Empowering South Africa's informal economy with Digital Trust.*
 
-**Khulisa** is an AI-powered financial empowerment platform designed for South Africa's informal economy. We translate daily mobile payment footprints into digital trust scores, unlocking micro-investment paths and credit opportunities.
-
----
-
-## 🚀 Experience the Flow
-
-Khulisa turns simple transaction history into actionable financial intelligence in three simple steps:
-
-1.  **Connect & Import**: Upload your mobile money (MoMo) or bank transaction history via CSV.
-2.  **AI Trust Scoring**: Our Gemini-powered engine analyzes your spending patterns to generate a "Trust Score" (0-1000).
-3.  **Growth Path**: Receive personalized micro-investment recommendations tailored to your specific surplus.
+**Khulisa** (meaning "To Grow") is an AI-powered financial empowerment platform. We bridge the gap between daily mobile money footprints and formal digital wealth by calculating Trust Scores and unlocking micro-investment paths.
 
 ---
 
-## 📁 Documentation
-
-| Section | Description |
-| :--- | :--- |
-| [**User Guide**](./docs/USER_GUIDE.md) | How to use the app, import data, and interpret scores. |
-| [**Technical Spec**](./docs/TECHNICAL_SPEC.md) | Architecture, tech stack, and API integration details. |
-| [**Brand Guidelines**](./docs/BRAND.md) | Exploring the "Khulisa Minimalist" design philosophy. |
+## 🎨 The Khulisa Minimalist Design
+Our platform follows the **Khulisa Modern Financial Minimalist** aesthetic:
+- **Clarity**: Swiss-style grids for readability.
+- **Strength**: Bold `tabular-nums` for significant financial figures.
+- **Trust**: A professional palette of Indigo-600 and Emerald-600.
 
 ---
 
-## 🛠️ Tech Stack
+## 🚀 The Three-Step Growth Journey
 
-- **Frontend**: React + Vite + TypeScript
-- **Styling**: Tailwind CSS (Khulisa Design System)
-- **AI Engine**: Google Gemini API
-- **Icons**: Lucide React
-- **Animations**: Framer Motion
-
----
-
-## 📥 Sample Data
-
-To test the platform immediately, download our [**Sample Transactions CSV**](./public/khulisa_sample_transactions.csv) and import it into the "Transactions" section.
+| Step | Action | Objective |
+| :--- | :--- | :--- |
+| **01. Import** | `Upload CSV` | Securely import your MoMo or bank transaction history. |
+| **02. Analyze** | `Calculate AI Score` | Our Gemini AI calculates your Trust Score (0-1000). |
+| **03. Invest** | `Start Saving` | Receive micro-investment recommendations tailored to your surplus. |
 
 ---
 
-## 🧑‍💻 Contributing
+## 📁 Documentation Hub
 
-We welcome contributions that help drive financial inclusion in South Africa. Please see our development instructions in `AGENTS.md`.
+- 📖 [**User Guide**](./docs/USER_GUIDE.md) - Mastering your financial dashboard.
+- ⚙️ [**Technical Spec**](./docs/TECHNICAL_SPEC.md) - Tech stack & AI prompt logic.
+- 💎 [**Brand Guidelines**](./docs/BRAND.md) - Colors, typography, and philosophy.
 
-*© 2026 Khulisa Platform. Empowering informal workers through tech.*
+---
+
+## 🛠️ Built for Impact
+- **Intelligence**: Google Gemini 1.5 Pro/Flash integration.
+- **Performance**: React 18 + Vite with zero HMR lag.
+- **Localized**: Full Support for English, isiZulu, isiXhosa, and Afrikaans.

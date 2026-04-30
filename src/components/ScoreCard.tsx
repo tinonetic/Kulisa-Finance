@@ -81,13 +81,13 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ score, lang, onRefresh, is
           </div>
 
           {score && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3">
               {score.recommendations.slice(0, 2).map((rec, i) => (
-                <div key={i} className="flex items-start gap-3 p-3 rounded-2xl bg-gray-50 border border-gray-100/50">
-                  <div className="mt-0.5 text-indigo-500 bg-white p-1 rounded-lg shadow-sm">
-                    {i === 0 ? <TrendingUp size={14} /> : <AlertCircle size={14} />}
+                <div key={i} className="flex items-start gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100/50 group hover:bg-indigo-50/50 transition-colors">
+                  <div className="mt-0.5 text-indigo-500 bg-white p-2 rounded-xl shadow-sm group-hover:scale-110 transition-transform">
+                    {i === 0 ? <TrendingUp size={16} /> : <AlertCircle size={16} />}
                   </div>
-                  <span className="text-xs text-gray-600 font-medium leading-tight">{rec}</span>
+                  <span className="text-sm text-gray-600 font-medium leading-relaxed">{rec}</span>
                 </div>
               ))}
             </div>

@@ -57,6 +57,7 @@ export default function App() {
   }, { inflow: 0, outflow: 0 });
 
   const balance = totals.inflow - totals.outflow;
+  const spendRatio = totals.inflow > 0 ? (totals.outflow / totals.inflow) * 100 : 0;
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -111,15 +112,45 @@ export default function App() {
       <Header lang={lang} setLang={setLang} balance={balance} />
 
       <main className="max-w-5xl mx-auto px-6 py-10 space-y-10">
+        {/* User Flow Indicator */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 py-6 border-b border-gray-100/50">
+          <div className="flex items-center gap-3">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${transactions.length > MOCK_TRANSACTIONS.length ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-400'}`}>1</div>
+            <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Import Data</span>
+          </div>
+          <div className="hidden md:block w-8 h-px bg-gray-200"></div>
+          <div className="flex items-center gap-3">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${score ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-400'}`}>2</div>
+            <span className="text-xs font-bold uppercase tracking-widest text-gray-400">AI Analysis</span>
+          </div>
+          <div className="hidden md:block w-8 h-px bg-gray-200"></div>
+          <div className="flex items-center gap-3">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${investment ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-400'}`}>3</div>
+            <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Grow Fund</span>
+          </div>
+        </div>
+
         {/* Stats Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+          <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm overflow-hidden relative group">
             <div className="flex items-center gap-3 text-gray-400 mb-4 uppercase tracking-widest font-black text-[10px]">
               <Wallet size={16} />
               {t.totalBalance}
             </div>
-            <div className="text-3xl font-black tracking-tight tabular-nums">
+            <div className="text-3xl font-black tracking-tight tabular-nums relative z-10">
               R {balance.toLocaleString()}
+            </div>
+            {/* Simple Budget Health Bar */}
+            <div className="mt-6 h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+               <motion.div 
+                 initial={{ width: 0 }}
+                 animate={{ width: `${Math.min(spendRatio, 100)}%` }}
+                 className={`h-full ${spendRatio > 80 ? 'bg-red-500' : 'bg-indigo-600'}`}
+               />
+            </div>
+            <div className="mt-2 flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-gray-400">
+               <span>Spend Ratio</span>
+               <span className={spendRatio > 80 ? 'text-red-500' : 'text-indigo-600'}>{spendRatio.toFixed(0)}%</span>
             </div>
           </div>
           <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">

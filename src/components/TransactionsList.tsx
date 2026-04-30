@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
-import { ArrowUpRight, ArrowDownLeft, ShoppingBag, Utensils, Zap, Smartphone, MoreHorizontal, TrendingDown } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowUpRight, ArrowDownLeft, ShoppingBag, Utensils, Zap, Smartphone, MoreHorizontal, TrendingDown, Search } from 'lucide-react';
 import { Transaction, Language } from '../types';
 import { translations } from '../translations';
 
@@ -35,17 +35,33 @@ const getCategoryColor = (category: string) => {
 
 export const TransactionsList: React.FC<TransactionsListProps> = ({ transactions, lang }) => {
   const t = translations[lang];
+  const [search, setSearch] = useState('');
+
+  const filteredTransactions = transactions.filter(tx => 
+    tx.description.toLowerCase().includes(search.toLowerCase()) ||
+    tx.category.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="p-6 border-b border-gray-50 flex items-center justify-between">
+      <div className="p-6 border-b border-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h3 className="font-bold text-gray-900">{t.recentTransactions}</h3>
-        <button className="text-sm font-bold text-indigo-600 hover:underline">View All</button>
+        
+        <div className="relative">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input 
+            type="text"
+            placeholder={lang === 'zu' ? 'Funa...' : 'Search...'}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9 pr-4 py-2 bg-gray-50 border-none rounded-xl text-xs focus:ring-2 focus:ring-indigo-100 w-full sm:w-64 transition-all"
+          />
+        </div>
       </div>
 
       <div className="divide-y divide-gray-50">
-        {transactions.length > 0 ? (
-          transactions.map((tx) => (
+        {filteredTransactions.length > 0 ? (
+          filteredTransactions.map((tx) => (
             <div key={tx.id} className="p-4 hover:bg-gray-50 transition-colors flex items-center gap-4">
               <div className={`p-3 rounded-2xl ${getCategoryColor(tx.category)}`}>
                 {getCategoryIcon(tx.category)}
