@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
-import { Menu, Bell, Wallet, Globe, TrendingUp, TrendingDown } from 'lucide-react';
+import React, { useState } from 'react';
+import { Menu, Bell, Wallet, Globe, TrendingUp, TrendingDown, Sparkles } from 'lucide-react';
 import { Language } from '../types';
 import { translations } from '../translations';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface HeaderProps {
   lang: Language;
@@ -16,6 +17,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ lang, setLang, balance }) => {
   const t = translations[lang];
+  const [showNotifications, setShowNotifications] = useState(false);
 
   return (
     <header className="sticky top-0 z-30 w-full bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-4 flex items-center justify-between">
@@ -61,10 +63,54 @@ export const Header: React.FC<HeaderProps> = ({ lang, setLang, balance }) => {
            </div>
         </div>
 
-        <button className="relative p-2 text-gray-400 hover:text-indigo-600 transition-colors">
-          <Bell size={20} />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="relative p-2 text-gray-400 hover:text-indigo-600 transition-colors focus:outline-none"
+          >
+            <Bell size={20} />
+            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+          </button>
+          
+          <AnimatePresence>
+            {showNotifications && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 origin-top-right whitespace-normal"
+              >
+                <div className="p-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+                  <h3 className="font-bold text-gray-900 text-sm">Notifications</h3>
+                  <span className="text-[10px] font-black uppercase text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded-full">2 New</span>
+                </div>
+                <div className="divide-y divide-gray-50 max-h-[300px] overflow-y-auto">
+                  <div className="p-4 hover:bg-gray-50 transition-colors cursor-pointer flex gap-3">
+                     <div className="bg-indigo-100 text-indigo-600 p-2 rounded-full h-fit">
+                       <Sparkles size={14} />
+                     </div>
+                     <div>
+                       <p className="text-xs text-gray-900 font-medium leading-tight mb-1">AI Calculation Ready</p>
+                       <p className="text-[11px] text-gray-500 leading-relaxed">Your transaction history has been analyzed. Calculate your Digital Trust Score to proceed.</p>
+                       <p className="text-[9px] text-gray-400 mt-2 uppercase font-black tracking-widest">Just now</p>
+                     </div>
+                  </div>
+                  <div className="p-4 hover:bg-gray-50 transition-colors cursor-pointer flex gap-3">
+                     <div className="bg-emerald-100 text-emerald-600 p-2 rounded-full h-fit">
+                       <TrendingUp size={14} />
+                     </div>
+                     <div>
+                       <p className="text-xs text-gray-900 font-medium leading-tight mb-1">Welcome to Khulisa</p>
+                       <p className="text-[11px] text-gray-500 leading-relaxed">Start your journey towards financial growth. Import your first CSV file to unlock your dashboard.</p>
+                       <p className="text-[9px] text-gray-400 mt-2 uppercase font-black tracking-widest">2 hours ago</p>
+                     </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
         
         <button className="md:hidden p-2 text-gray-400">
           <Menu size={24} />
