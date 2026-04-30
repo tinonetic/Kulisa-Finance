@@ -14,6 +14,8 @@ interface WizardProps {
   score: TrustScore | null;
   investment: InvestmentPlan | null;
   isLoading: boolean;
+  onStartSaving: (amount: number) => void;
+  isSaving: boolean;
 }
 
 export const Wizard: React.FC<WizardProps> = ({ 
@@ -23,11 +25,32 @@ export const Wizard: React.FC<WizardProps> = ({
   calculateScore, 
   score, 
   investment, 
-  isLoading 
+  isLoading,
+  onStartSaving,
+  isSaving
 }) => {
   const [step, setStep] = useState(1);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [localTransactions, setLocalTransactions] = useState<Transaction[]>([]);
   const t = translations[lang];
+
+  const parseCSV = (text: string) => {
+    const lines = text.split('\n').filter(line => line.trim() !== '');
+    const newTransactions: Transaction[] = lines.slice(1).map((line, index) => {
+      const [date, amount, description, type, category] = line.split(',');
+      return {
+        id: `wiz-${index}`,
+        date: date?.trim() || new Date().toISOString().split('T')[0],
+        amount: parseFloat(amount?.trim() || '0'),
+        description: description?.trim() || 'Untitled',
+        type: (type?.trim().toLowerCase() === 'inflow' ? 'inflow' : 'outflow') as 'inflow' | 'outflow',
+        category: category?.trim().toLowerCase() || 'other'
+      };
+    });
+    setLocalTransactions(newTransactions);
+    setStep(2);
+  };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -36,22 +59,33 @@ export const Wizard: React.FC<WizardProps> = ({
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = e.target?.result as string;
-      const lines = text.split('\n').filter(line => line.trim() !== '');
-      const newTransactions: Transaction[] = lines.slice(1).map((line, index) => {
-        const [date, amount, description, type, category] = line.split(',');
-        return {
-          id: `wiz-${index}`,
-          date: date?.trim() || new Date().toISOString().split('T')[0],
-          amount: parseFloat(amount?.trim() || '0'),
-          description: description?.trim() || 'Untitled',
-          type: (type?.trim().toLowerCase() === 'inflow' ? 'inflow' : 'outflow') as 'inflow' | 'outflow',
-          category: category?.trim().toLowerCase() || 'other'
-        };
-      });
-      setLocalTransactions(newTransactions);
-      setStep(2);
+      parseCSV(text);
     };
     reader.readAsText(file);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file && file.name.endsWith('.csv')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        parseCSV(event.target?.result as string);
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const useSampleData = () => {
+    const sample = `Date,Amount,Description,Type,Category
+2026-04-01,1500,Client Payment,inflow,income
+2026-04-02,200,Airtime Purchase,outflow,utilities
+2026-04-05,50,Snack shop,outflow,food
+2026-04-10,3000,Salary Deposit,inflow,income
+2026-04-12,400,Transport,outflow,travel
+2026-04-15,100,Savings Deposit,outflow,savings`;
+    parseCSV(sample);
   };
 
   const nextStep = () => {
@@ -127,14 +161,43 @@ export const Wizard: React.FC<WizardProps> = ({
                   </p>
                 </div>
                 
-                <div className="bg-white p-12 rounded-[3.5rem] border border-gray-100 shadow-2xl shadow-indigo-200/20 relative group">
-                  <div className="absolute inset-0 bg-indigo-50 opacity-0 group-hover:opacity-10 transition-opacity rounded-[3.5rem]"></div>
-                  <Upload size={48} className="mx-auto text-indigo-600 mb-8" />
-                  <label className="inline-block px-12 py-6 bg-indigo-600 text-white rounded-[2rem] text-lg font-black uppercase tracking-widest shadow-2xl shadow-indigo-600/30 cursor-pointer hover:bg-indigo-700 transition-all active:scale-95">
-                    Choose CSV File
-                    <input type="file" accept=".csv" className="hidden" onChange={handleFileUpload} />
-                  </label>
-                  <p className="mt-8 text-xs font-black text-gray-300 uppercase tracking-[0.3em]">
+                <div 
+                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={handleDrop}
+                  className={`bg-white p-12 rounded-[3.5rem] border-2 border-dashed transition-all relative group ${isDragging ? "border-indigo-600 bg-indigo-50/50" : "border-gray-100 shadow-2xl shadow-indigo-200/20"}`}
+                >
+                  <Upload size={48} className={`mx-auto mb-8 transition-colors ${isDragging ? "text-indigo-600 scale-110" : "text-gray-300"}`} />
+                  <div className="space-y-6">
+                    <button 
+                      onClick={() => fileInputRef.current?.click()}
+                      className="inline-block px-12 py-6 bg-indigo-600 text-white rounded-[2rem] text-lg font-black uppercase tracking-widest shadow-2xl shadow-indigo-600/30 cursor-pointer hover:bg-indigo-700 transition-all active:scale-95"
+                    >
+                      Choose CSV File
+                    </button>
+                    <input 
+                      type="file" 
+                      ref={fileInputRef}
+                      accept=".csv" 
+                      className="hidden" 
+                      onChange={handleFileUpload} 
+                    />
+                    
+                    <div className="flex items-center justify-center gap-4 py-4">
+                      <div className="h-px w-12 bg-gray-100"></div>
+                      <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">or</span>
+                      <div className="h-px w-12 bg-gray-100"></div>
+                    </div>
+
+                    <button 
+                      onClick={useSampleData}
+                      className="text-indigo-600 font-black uppercase tracking-widest text-xs hover:underline decoration-2 underline-offset-4"
+                    >
+                      Use Sample Khulisa Data
+                    </button>
+                  </div>
+                  
+                  <p className="mt-12 text-[10px] font-black text-gray-300 uppercase tracking-[0.3em]">
                     Format: Date, Amount, Merchant, Type, Category
                   </p>
                 </div>
@@ -177,7 +240,12 @@ export const Wizard: React.FC<WizardProps> = ({
                   </p>
                 </div>
                 <div className="max-w-2xl mx-auto">
-                  <InvestmentCard plan={investment} lang={lang} />
+                  <InvestmentCard 
+                    plan={investment} 
+                    lang={lang} 
+                    onStartSaving={onStartSaving}
+                    isSaving={isSaving}
+                  />
                 </div>
                 <div className="flex justify-center pt-12">
                    <button 

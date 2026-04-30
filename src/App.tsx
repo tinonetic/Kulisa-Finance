@@ -137,6 +137,8 @@ export default function App() {
             onClose={() => setShowWizard(false)}
             onComplete={handleWizardComplete}
             calculateScore={handleCalculateScore}
+            onStartSaving={handleStartSaving}
+            isSaving={isSaving}
           />
         )}
       </AnimatePresence>
