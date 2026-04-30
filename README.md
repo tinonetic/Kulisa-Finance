@@ -6,7 +6,7 @@
 1. **Launch the Guided Tour**: Click the **"Start Guided Tour"** button at the top of the app for a step-by-step walkthrough.
 2. **Import Sample Data**: If you don't have a CSV, use the **[khulisa_sample_transactions.csv](./public/khulisa_sample_transactions.csv)** provided in the public folder.
 3. **Calculate AI Score**: Once transactions are loaded, click **"Calculate AI Score"** to see your digital trust rating.
-4. **Start Growing**: Review your AI-generated **Growth Plan** and click **"Start Saving"** to begin your investment journey.
+4. **Start Growing**: Review your AI-generated **Growth Plan** and click **"Start Saving"** to begin your investment journey. *(Note: Clicking this button runs a simulated money transfer, instantly adding the recommended deposit to your "Portfolio" balance for demonstration purposes.)*
 
 ---
 

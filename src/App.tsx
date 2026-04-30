@@ -197,7 +197,8 @@ export default function App() {
                <span className={spendRatio > 80 ? 'text-red-500' : 'text-indigo-600'}>{spendRatio.toFixed(0)}%</span>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+          <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group">
+            <div className="absolute top-0 right-0 px-3 py-1 bg-indigo-50 text-indigo-600 text-[9px] font-black uppercase tracking-widest rounded-bl-xl border-b border-l border-indigo-100">Simulated</div>
             <div className="flex items-center gap-3 text-indigo-600 mb-4 uppercase tracking-widest font-black text-[10px]">
               <Sparkles size={16} />
               Portfolio
