@@ -18,7 +18,7 @@ import { analyzeTransactions } from './services/geminiService';
 import { translations } from './translations';
 import { motion, AnimatePresence } from 'motion/react';
 import { Wizard } from './components/Wizard';
-import { Wallet, TrendingUp, TrendingDown, Upload, PlayCircle } from 'lucide-react';
+import { Wallet, TrendingUp, TrendingDown, Upload, PlayCircle, Sparkles } from 'lucide-react';
 
 const MOCK_TRANSACTIONS: Transaction[] = [
   { id: '1', date: '2026-04-28', amount: 1500, description: 'Client Payment', type: 'inflow', category: 'income' },

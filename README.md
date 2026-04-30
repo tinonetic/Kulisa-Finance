@@ -19,6 +19,28 @@
 
 ---
 
+## 🏗️ Application Architecture & Workflow
+
+```mermaid
+graph TD
+    A[User CSV Data] -->|Import| B(CSV Parser)
+    B --> C{Transaction Hub}
+    C -->|Historical View| D[Dashboard Table]
+    C -->|AI Prompt Context| E[Gemini 1.5 Flash Engine]
+    E --> F[Analysis Results]
+    F --> G[Digital Trust Score Card]
+    F --> H[Micro-Investment Strategy]
+    G --> I[Financial Identity]
+    H --> J[Wealth Creation]
+    
+    subgraph "The Khulisa Engine"
+    E
+    F
+    end
+```
+
+---
+
 ## 🎨 The Khulisa Minimalist Design
 Our platform follows the **Khulisa Modern Financial Minimalist** aesthetic:
 - **Clarity**: Swiss-style grids for readability.
