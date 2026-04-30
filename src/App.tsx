@@ -36,8 +36,17 @@ export default function App() {
   const [investment, setInvestment] = useState<InvestmentPlan | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
+  const [savingsBalance, setSavingsBalance] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
 
   const t = translations[lang];
+
+  const handleStartSaving = (amount: number) => {
+    setIsSaving(true);
+    setSavingsBalance(prev => prev + amount);
+    // Simulate a successful investment initiation
+    setTimeout(() => setIsSaving(false), 2000);
+  };
 
   const handleCalculateScore = async (txs: Transaction[] = transactions) => {
     setIsLoading(true);
@@ -164,7 +173,7 @@ export default function App() {
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm overflow-hidden relative group">
             <div className="flex items-center gap-3 text-gray-400 mb-4 uppercase tracking-widest font-black text-[10px]">
               <Wallet size={16} />
@@ -184,6 +193,19 @@ export default function App() {
             <div className="mt-2 flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-gray-400">
                <span>Spend Ratio</span>
                <span className={spendRatio > 80 ? 'text-red-500' : 'text-indigo-600'}>{spendRatio.toFixed(0)}%</span>
+            </div>
+          </div>
+          <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+            <div className="flex items-center gap-3 text-indigo-600 mb-4 uppercase tracking-widest font-black text-[10px]">
+              <Sparkles size={16} />
+              Portfolio
+            </div>
+            <div className="text-3xl font-black tracking-tight text-indigo-600 tabular-nums">
+              R {savingsBalance.toLocaleString()}
+            </div>
+            <div className="mt-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center gap-1">
+               <TrendingUp size={10} className="text-emerald-500" />
+               <span className="text-emerald-500">+12%</span> Predicted
             </div>
           </div>
           <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
@@ -230,7 +252,12 @@ export default function App() {
                transition={{ duration: 0.4, delay: 0.1 }}
                className="h-full"
              >
-               <InvestmentCard plan={investment} lang={lang} />
+               <InvestmentCard 
+                 plan={investment} 
+                 lang={lang} 
+                 onStartSaving={handleStartSaving}
+                 isSaving={isSaving}
+               />
              </motion.div>
            </AnimatePresence>
         </section>

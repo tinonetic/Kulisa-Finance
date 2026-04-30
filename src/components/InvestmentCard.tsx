@@ -11,9 +11,11 @@ import { translations } from '../translations';
 interface InvestmentCardProps {
   plan: InvestmentPlan | null;
   lang: Language;
+  onStartSaving: (amount: number) => void;
+  isSaving?: boolean;
 }
 
-export const InvestmentCard: React.FC<InvestmentCardProps> = ({ plan, lang }) => {
+export const InvestmentCard: React.FC<InvestmentCardProps> = ({ plan, lang, onStartSaving, isSaving }) => {
   const t = translations[lang];
 
   return (
@@ -54,9 +56,17 @@ export const InvestmentCard: React.FC<InvestmentCardProps> = ({ plan, lang }) =>
                </div>
              </div>
 
-             <button className="w-full md:w-auto bg-white text-indigo-700 px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-indigo-900/40 hover:bg-indigo-50 transition-colors active:scale-95 group">
-                {t.startSaving}
-                <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
+             <button 
+                onClick={() => onStartSaving(plan.suggestedAmount)}
+                disabled={isSaving}
+                className={`w-full md:w-auto px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 group shadow-xl ${
+                  isSaving 
+                    ? 'bg-emerald-500 text-white shadow-emerald-900/40' 
+                    : 'bg-white text-indigo-700 shadow-indigo-900/40 hover:bg-indigo-50'
+                }`}
+             >
+                {isSaving ? 'Growth Started!' : t.startSaving}
+                {isSaving ? <TrendingUp size={20} /> : <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />}
              </button>
           </div>
         ) : (
