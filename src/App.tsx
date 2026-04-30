@@ -17,7 +17,8 @@ import { Transaction, TrustScore, InvestmentPlan, Language } from './types';
 import { analyzeTransactions } from './services/geminiService';
 import { translations } from './translations';
 import { motion, AnimatePresence } from 'motion/react';
-import { Wallet, TrendingUp, TrendingDown, Upload } from 'lucide-react';
+import { Wizard } from './components/Wizard';
+import { Wallet, TrendingUp, TrendingDown, Upload, PlayCircle } from 'lucide-react';
 
 const MOCK_TRANSACTIONS: Transaction[] = [
   { id: '1', date: '2026-04-28', amount: 1500, description: 'Client Payment', type: 'inflow', category: 'income' },
@@ -34,13 +35,14 @@ export default function App() {
   const [score, setScore] = useState<TrustScore | null>(null);
   const [investment, setInvestment] = useState<InvestmentPlan | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showWizard, setShowWizard] = useState(false);
 
   const t = translations[lang];
 
-  const handleCalculateScore = async () => {
+  const handleCalculateScore = async (txs: Transaction[] = transactions) => {
     setIsLoading(true);
     try {
-      const result = await analyzeTransactions(transactions);
+      const result = await analyzeTransactions(txs);
       setScore(result.score);
       setInvestment(result.investment);
     } catch (err) {
@@ -48,6 +50,13 @@ export default function App() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleWizardComplete = (txs: Transaction[], s: TrustScore | null, i: InvestmentPlan | null) => {
+    if (txs.length > 0) setTransactions(txs);
+    if (s) setScore(s);
+    if (i) setInvestment(i);
+    setShowWizard(false);
   };
 
   const totals = transactions.reduce((acc, tx) => {
@@ -109,25 +118,49 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50/50 font-sans text-gray-900 selection:bg-indigo-100 selection:text-indigo-900">
+      <AnimatePresence>
+        {showWizard && (
+          <Wizard 
+            lang={lang}
+            score={score}
+            investment={investment}
+            isLoading={isLoading}
+            onClose={() => setShowWizard(false)}
+            onComplete={handleWizardComplete}
+            calculateScore={handleCalculateScore}
+          />
+        )}
+      </AnimatePresence>
+
       <Header lang={lang} setLang={setLang} balance={balance} />
 
       <main className="max-w-5xl mx-auto px-6 py-10 space-y-10">
         {/* User Flow Indicator */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-4 py-6 border-b border-gray-100/50">
-          <div className="flex items-center gap-3">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${transactions.length > MOCK_TRANSACTIONS.length ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-400'}`}>1</div>
-            <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Import Data</span>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 py-6 border-b border-gray-100/50 px-4">
+          <div className="flex flex-col md:flex-row items-center gap-4">
+             <div className="flex items-center gap-3">
+               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${transactions.length > MOCK_TRANSACTIONS.length ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-400'}`}>1</div>
+               <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Import Data</span>
+             </div>
+             <div className="hidden md:block w-8 h-px bg-gray-200"></div>
+             <div className="flex items-center gap-3">
+               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${score ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-400'}`}>2</div>
+               <span className="text-xs font-bold uppercase tracking-widest text-gray-400">AI Analysis</span>
+             </div>
+             <div className="hidden md:block w-8 h-px bg-gray-200"></div>
+             <div className="flex items-center gap-3">
+               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${investment ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-400'}`}>3</div>
+               <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Grow Fund</span>
+             </div>
           </div>
-          <div className="hidden md:block w-8 h-px bg-gray-200"></div>
-          <div className="flex items-center gap-3">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${score ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-400'}`}>2</div>
-            <span className="text-xs font-bold uppercase tracking-widest text-gray-400">AI Analysis</span>
-          </div>
-          <div className="hidden md:block w-8 h-px bg-gray-200"></div>
-          <div className="flex items-center gap-3">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${investment ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-400'}`}>3</div>
-            <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Grow Fund</span>
-          </div>
+          
+          <button 
+            onClick={() => setShowWizard(true)}
+            className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all hover:-translate-y-0.5 active:translate-y-0"
+          >
+            <PlayCircle size={16} />
+            Start Guided Tour
+          </button>
         </div>
 
         {/* Stats Row */}
