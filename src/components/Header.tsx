@@ -20,8 +20,8 @@ export const Header: React.FC<HeaderProps> = ({ lang, setLang, balance }) => {
   return (
     <header className="sticky top-0 z-30 w-full bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-4 flex items-center justify-between">
       <div className="flex items-center gap-3">
-        <div className="bg-indigo-600 p-2 rounded-xl text-white">
-          <Wallet size={24} />
+        <div className="bg-indigo-600 rounded-xl overflow-hidden">
+          <img src="/logo.svg" alt="Khulisa Logo" className="w-10 h-10 p-2" />
         </div>
         <div>
           <h1 className="text-xl font-bold text-gray-900 tracking-tight">{t.appName}</h1>
