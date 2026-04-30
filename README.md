@@ -2,7 +2,12 @@
 
 > *Empowering South Africa's informal economy with Digital Trust.*
 
-**Khulisa** (meaning "To Grow") is an AI-powered financial empowerment platform. We bridge the gap between daily mobile money footprints and formal digital wealth by calculating Trust Scores and unlocking micro-investment paths.
+## 🏆 Project Pitch: The Vision
+**Khulisa** (meaning "To Grow") is an AI-powered financial empowerment platform designed for South Africa's informal economy. 
+
+**The Challenge:** Millions of South Africans operate in the informal sector, earning and spending through fragmented digital channels (MoMo, airtime, small bank transfers). Because this data isn't "centralized," these individuals are often excluded from formal credit and investment opportunities.
+
+**The Solution:** Khulisa bridges the gap. By allowing users to import their transaction history, we use **Google Gemini 1.5 Flash** to perform deep behavioral analysis. We transform raw spending data into a **Digital Trust Score** and a personalized **Micro-Investment Path**, turning a simple CSV of history into a bridge to formal wealth.
 
 ---
 
