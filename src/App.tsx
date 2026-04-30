@@ -1,0 +1,208 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { useState } from 'react';
+import { Header } from './components/Header';
+import { ScoreCard } from './components/ScoreCard';
+import { InvestmentCard } from './components/InvestmentCard';
+import { TransactionsList } from './components/TransactionsList';
+import { Transaction, TrustScore, InvestmentPlan, Language } from './types';
+import { analyzeTransactions } from './services/geminiService';
+import { translations } from './translations';
+import { motion, AnimatePresence } from 'motion/react';
+import { Wallet, TrendingUp, TrendingDown, Upload } from 'lucide-react';
+
+const MOCK_TRANSACTIONS: Transaction[] = [
+  { id: '1', date: '2026-04-28', amount: 1500, description: 'Client Payment', type: 'inflow', category: 'income' },
+  { id: '2', date: '2026-04-28', amount: 350, description: 'Pick n Pay Spaza', type: 'outflow', category: 'food' },
+  { id: '3', date: '2026-04-29', amount: 200, description: 'Vodacom Top Up', type: 'outflow', category: 'top-up' },
+  { id: '4', date: '2026-04-29', amount: 600, description: 'Eskom Prepaid', type: 'outflow', category: 'utilities' },
+  { id: '5', date: '2026-04-30', amount: 2500, description: 'Stock Purchase', type: 'outflow', category: 'business' },
+  { id: '6', date: '2026-04-30', amount: 4500, description: 'Weekly Revenue', type: 'inflow', category: 'income' },
+];
+
+export default function App() {
+  const [lang, setLang] = useState<Language>('en');
+  const [transactions, setTransactions] = useState<Transaction[]>(MOCK_TRANSACTIONS);
+  const [score, setScore] = useState<TrustScore | null>(null);
+  const [investment, setInvestment] = useState<InvestmentPlan | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const t = translations[lang];
+
+  const handleCalculateScore = async () => {
+    setIsLoading(true);
+    try {
+      const result = await analyzeTransactions(transactions);
+      setScore(result.score);
+      setInvestment(result.investment);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const totals = transactions.reduce((acc, tx) => {
+    if (tx.type === 'inflow') acc.inflow += tx.amount;
+    else acc.outflow += tx.amount;
+    return acc;
+  }, { inflow: 0, outflow: 0 });
+
+  const balance = totals.inflow - totals.outflow;
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result as string;
+      const lines = text.split('\n').filter(line => line.trim() !== '');
+      // Skip header and map to Transaction type
+      const newTransactions: Transaction[] = lines.slice(1).map((line, index) => {
+        const [date, amount, description, type, category] = line.split(',');
+        return {
+          id: `imported-${index}`,
+          date: date?.trim() || new Date().toISOString().split('T')[0],
+          amount: parseFloat(amount?.trim() || '0'),
+          description: description?.trim() || 'Untitled',
+          type: (type?.trim().toLowerCase() === 'inflow' ? 'inflow' : 'outflow') as 'inflow' | 'outflow',
+          category: category?.trim().toLowerCase() || 'other'
+        };
+      });
+      
+      setTransactions(newTransactions);
+      setScore(null); // Reset score so user re-calculates with new data
+      setInvestment(null);
+    };
+    reader.readAsText(file);
+  };
+
+  const downloadSampleCSV = () => {
+    const csvContent = "Date,Amount,Description,Type,Category\n" +
+      "2026-05-01,2500.00,Monthly Salary,inflow,income\n" +
+      "2026-05-02,450.00,Grocery Store,outflow,food\n" +
+      "2026-05-03,120.00,Airtime Top-up,outflow,top-up\n" +
+      "2026-05-04,800.00,Rent Payment,outflow,utilities\n" +
+      "2026-05-05,150.00,Freelance Project,inflow,income\n" +
+      "2026-05-06,200.00,Petrol,outflow,transport";
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'khulisa_sample_transactions.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50/50 font-sans text-gray-900 selection:bg-indigo-100 selection:text-indigo-900">
+      <Header lang={lang} setLang={setLang} balance={balance} />
+
+      <main className="max-w-5xl mx-auto px-6 py-10 space-y-10">
+        {/* Stats Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+            <div className="flex items-center gap-3 text-gray-400 mb-4 uppercase tracking-widest font-black text-[10px]">
+              <Wallet size={16} />
+              {t.totalBalance}
+            </div>
+            <div className="text-3xl font-black tracking-tight tabular-nums">
+              R {balance.toLocaleString()}
+            </div>
+          </div>
+          <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+            <div className="flex items-center gap-3 text-emerald-500 mb-4 uppercase tracking-widest font-black text-[10px]">
+              <TrendingUp size={16} />
+              {t.monthlyInflow}
+            </div>
+            <div className="text-3xl font-black tracking-tight text-emerald-600 tabular-nums">
+              R {totals.inflow.toLocaleString()}
+            </div>
+          </div>
+          <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+            <div className="flex items-center gap-3 text-red-500 mb-4 uppercase tracking-widest font-black text-[10px]">
+              <TrendingDown size={16} />
+              {t.monthlyOutflow}
+            </div>
+            <div className="text-3xl font-black tracking-tight text-red-600 tabular-nums">
+              R {totals.outflow.toLocaleString()}
+            </div>
+          </div>
+        </div>
+
+        {/* Core AI Features */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+           <AnimatePresence mode="wait">
+             <motion.div
+               key={lang + (score ? 'scored' : 'empty')}
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               exit={{ opacity: 0, y: -20 }}
+               transition={{ duration: 0.4 }}
+               className="h-full"
+             >
+               <ScoreCard score={score} lang={lang} onRefresh={handleCalculateScore} isLoading={isLoading} />
+             </motion.div>
+           </AnimatePresence>
+
+           <AnimatePresence mode="wait">
+             <motion.div
+               key={lang + (investment ? 'planned' : 'empty')}
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               exit={{ opacity: 0, y: -20 }}
+               transition={{ duration: 0.4, delay: 0.1 }}
+               className="h-full"
+             >
+               <InvestmentCard plan={investment} lang={lang} />
+             </motion.div>
+           </AnimatePresence>
+        </section>
+
+        {/* Transactions Section */}
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold tracking-tight">{t.transactions}</h2>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={downloadSampleCSV}
+                className="px-4 py-2 bg-indigo-50 text-[10px] font-black text-indigo-600 uppercase tracking-widest rounded-xl hover:bg-indigo-100 transition-colors"
+              >
+                Download Sample
+              </button>
+              <label className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-xl text-xs font-bold text-gray-500 cursor-pointer hover:bg-gray-50 transition-colors shadow-sm">
+                <Upload size={14} />
+                Import CSV
+                <input type="file" accept=".csv" className="hidden" onChange={handleFileUpload} />
+              </label>
+            </div>
+          </div>
+          <TransactionsList transactions={transactions} lang={lang} />
+          
+          <div className="mt-4 p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100/50">
+             <p className="text-[10px] text-indigo-400 font-bold uppercase tracking-widest leading-relaxed">
+               Format: Date, Amount, Description, Type(inflow/outflow), Category
+             </p>
+          </div>
+        </section>
+      </main>
+
+      <footer className="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100/50 mt-10 text-center">
+         <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">{t.appName} &copy; 2026 • AI-Powered Empowerment</p>
+      </footer>
+    </div>
+  );
+}
+
